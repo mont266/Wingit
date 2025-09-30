@@ -1,0 +1,5 @@
+{
+  "name": "Wingit",
+  "description": "Wingit helps you track your flight history. Manually add flights or import them from your flightradar24 history to see your journey unfold.",
+  "requestFramePermissions": []
+}
