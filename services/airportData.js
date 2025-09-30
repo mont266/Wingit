@@ -1,7 +1,4 @@
-
-import { Airport } from '../types';
-
-export const AIRPORT_DATA: Airport[] = [
+export const AIRPORT_DATA = [
   // FIX: Corrected IATA code from airport name to 'ATL'.
   { iata: 'ATL', icao: 'KATL', name: 'Hartsfield-Jackson Atlanta International Airport', city: 'Atlanta', country: 'United States', lat: 33.6407, lon: -84.4277 },
   { iata: 'DXB', icao: 'OMDB', name: 'Dubai International Airport', city: 'Dubai', country: 'United Arab Emirates', lat: 25.2532, lon: 55.3657 },

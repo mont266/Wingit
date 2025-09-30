@@ -1,13 +1,11 @@
-
 import React, { useState } from 'react';
-import { supabase } from '../services/supabaseClient';
-import { DatabaseIcon, SpinnerIcon, DownloadIcon } from './icons';
-import { AIRPORT_DATA } from '../services/airportData';
-import { Airport } from '../types';
+import { supabase } from '../services/supabaseClient.js';
+import { DatabaseIcon, SpinnerIcon, DownloadIcon } from './icons.jsx';
+import { AIRPORT_DATA } from '../services/airportData.js';
 
-const DataSeeder: React.FC = () => {
-    const [status, setStatus] = useState<'idle' | 'inserting' | 'success' | 'error'>('idle');
-    const [message, setMessage] = useState<string>('');
+const DataSeeder = () => {
+    const [status, setStatus] = useState('idle');
+    const [message, setMessage] = useState('');
     const [progress, setProgress] = useState(0);
 
     const handleSeed = async () => {
@@ -49,7 +47,7 @@ const DataSeeder: React.FC = () => {
     };
 
     const handleDownloadCsv = () => {
-        const headers: (keyof Airport)[] = ['iata', 'icao', 'name', 'city', 'country', 'lat', 'lon'];
+        const headers = ['iata', 'icao', 'name', 'city', 'country', 'lat', 'lon'];
         const csvRows = [headers.join(',')];
 
         for (const airport of AIRPORT_DATA) {

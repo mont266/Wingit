@@ -1,19 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured } from './services/supabaseClient';
-import { Session, User } from '@supabase/supabase-js';
-import Auth from './components/Auth';
-import FlightDashboard from './components/FlightDashboard';
-import { SpinnerIcon } from './components/icons';
+import { supabase, isSupabaseConfigured } from './services/supabaseClient.js';
+import Auth from './components/Auth.jsx';
+import FlightDashboard from './components/FlightDashboard.jsx';
+import { SpinnerIcon } from './components/icons.jsx';
 
-interface Profile {
-    username: string;
-    role: string;
-}
-
-const App: React.FC = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+const App = () => {
+  const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,7 +38,7 @@ const App: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const getProfile = async (user: User) => {
+  const getProfile = async (user) => {
     try {
       const { data, error, status } = await supabase
         .from('profiles')
@@ -58,7 +51,7 @@ const App: React.FC = () => {
       }
 
       if (data) {
-        setProfile(data as Profile);
+        setProfile(data);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);

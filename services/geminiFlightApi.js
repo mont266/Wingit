@@ -1,6 +1,5 @@
-
 import { GoogleGenAI, Type } from '@google/genai';
-import { Flight, COMMON_AIRLINES } from '../types';
+import { COMMON_AIRLINES } from '../types.js';
 
 const apiKey = process.env.API_KEY;
 
@@ -36,10 +35,10 @@ const flightSchema = {
 };
 
 export const findFlightDetailsWithGemini = async (
-  airline: string,
-  flightNumber: string,
-  date: string
-): Promise<Omit<Flight, 'id'>> => {
+  airline,
+  flightNumber,
+  date
+) => {
   if (!isGeminiConfigured) {
     throw new Error('Gemini API key is not configured. Cannot find flight details.');
   }
@@ -75,7 +74,7 @@ export const findFlightDetailsWithGemini = async (
         flightData.flightNumber = `${airlineIata}${flightData.flightNumber}`;
     }
 
-    return flightData as Omit<Flight, 'id'>;
+    return flightData;
 
   } catch (error) {
     console.error('Gemini API Error:', error);

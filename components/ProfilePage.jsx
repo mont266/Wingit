@@ -1,15 +1,8 @@
-
 import React, { useMemo } from 'react';
-import { Flight } from '../types';
-import { PlaneIcon, ClockIcon, DistanceIcon, AirlineIcon, AircraftIcon, GlobeIcon } from './icons';
-import DataSeeder from './DataSeeder';
+import { PlaneIcon, ClockIcon, DistanceIcon, AirlineIcon, AircraftIcon, GlobeIcon } from './icons.jsx';
+import DataSeeder from './DataSeeder.jsx';
 
-interface ProfilePageProps {
-    flights: Flight[];
-    profile: { username: string; role: string; } | null;
-}
-
-const StatHighlightCard: React.FC<{ icon: React.ReactNode; label: string; value: React.ReactNode; footer: string; }> = ({ icon, label, value, footer }) => (
+const StatHighlightCard = ({ icon, label, value, footer }) => (
     <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md flex flex-col justify-between h-full">
         <div>
             <div className="flex items-center text-slate-500 dark:text-slate-400">
@@ -22,7 +15,7 @@ const StatHighlightCard: React.FC<{ icon: React.ReactNode; label: string; value:
     </div>
 );
 
-const TopListItem: React.FC<{ rank: number; name: string; count: number; icon: React.ReactNode; }> = ({ rank, name, count, icon }) => (
+const TopListItem = ({ rank, name, count, icon }) => (
     <div className="flex items-center space-x-4">
         <div className="text-lg font-bold text-slate-400 dark:text-slate-500 w-4 text-right">{rank}.</div>
         <div className="flex-shrink-0">{icon}</div>
@@ -33,7 +26,7 @@ const TopListItem: React.FC<{ rank: number; name: string; count: number; icon: R
     </div>
 );
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ flights, profile }) => {
+const ProfilePage = ({ flights, profile }) => {
 
     const stats = useMemo(() => {
         if (flights.length === 0) return null;
@@ -41,13 +34,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ flights, profile }) => {
         const longestFlightByDistance = [...flights].sort((a, b) => b.distance - a.distance)[0];
         const longestFlightByDuration = [...flights].sort((a, b) => b.duration - a.duration)[0];
 
-        const countItems = (key: keyof Flight) => {
+        const countItems = (key) => {
             return flights.reduce((acc, flight) => {
-                const item = flight[key] as string;
+                const item = flight[key];
                 if(item === 'N/A') return acc;
                 acc[item] = (acc[item] || 0) + 1;
                 return acc;
-            }, {} as Record<string, number>);
+            }, {});
         };
         
         const countAirports = () => {
@@ -55,10 +48,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ flights, profile }) => {
                 acc[flight.fromName] = (acc[flight.fromName] || 0) + 1;
                 acc[flight.toName] = (acc[flight.toName] || 0) + 1;
                 return acc;
-            }, {} as Record<string, number>);
+            }, {});
         }
 
-        const getTopThree = (counts: Record<string, number>) => {
+        const getTopThree = (counts) => {
             return Object.entries(counts)
                 .sort(([, a], [, b]) => b - a)
                 .slice(0, 3);
@@ -77,7 +70,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ flights, profile }) => {
         };
     }, [flights]);
 
-    const formatDuration = (minutes: number) => {
+    const formatDuration = (minutes) => {
         const h = Math.floor(minutes / 60);
         const m = minutes % 60;
         return `${h}h ${m}m`;

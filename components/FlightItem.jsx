@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
-import { Flight } from '../types';
-import { PlaneTakeoffIcon, PlaneLandingIcon, TrashIcon, CalendarIcon, HashtagIcon, AirlineIcon, AircraftIcon, ClockIcon, DistanceIcon, ChevronDownIcon } from './icons';
+import { PlaneTakeoffIcon, PlaneLandingIcon, TrashIcon, CalendarIcon, HashtagIcon, AirlineIcon, AircraftIcon, ClockIcon, DistanceIcon, ChevronDownIcon } from './icons.jsx';
 
-interface FlightItemProps {
-  flight: Flight;
-  onDelete: (id: string) => void;
-  showICAO: boolean;
-}
-
-const FlightItem: React.FC<FlightItemProps> = ({ flight, onDelete, showICAO }) => {
+const FlightItem = ({ flight, onDelete, showICAO }) => {
   const [isExpanded, setIsExpanded] = useState(false);
     
-  const formatDuration = (minutes: number) => {
+  const formatDuration = (minutes) => {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return `${h}h ${m}m`;
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString) => {
     // Handles YYYY-MM-DD format without timezone issues.
     const [year, month, day] = dateString.split('-').map(Number);
     if (!year || !month || !day) return dateString;
@@ -26,7 +19,7 @@ const FlightItem: React.FC<FlightItemProps> = ({ flight, onDelete, showICAO }) =
     
     const monthName = date.toLocaleString('default', { month: 'long', timeZone: 'UTC' });
 
-    const getDayWithSuffix = (d: number) => {
+    const getDayWithSuffix = (d) => {
         if (d > 3 && d < 21) return `${d}th`;
         switch (d % 10) {
             case 1: return `${d}st`;
@@ -39,7 +32,7 @@ const FlightItem: React.FC<FlightItemProps> = ({ flight, onDelete, showICAO }) =
     return `${getDayWithSuffix(day)} ${monthName} ${year}`;
   };
 
-  const AirportDisplay: React.FC<{name: string, iata: string, icao?: string}> = ({ name, iata, icao }) => (
+  const AirportDisplay = ({ name, iata, icao }) => (
     <p className="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 truncate" title={`${name} (${iata})`}>
         {name}
         <span className="ml-1.5 text-slate-500 dark:text-slate-400 font-normal">({iata})</span>

@@ -1,12 +1,7 @@
 import React, { useMemo } from 'react';
-import { Flight } from '../types';
-import { GlobeIcon, DistanceIcon, ClockIcon, PlaneIcon } from './icons';
+import { GlobeIcon, DistanceIcon, ClockIcon, PlaneIcon } from './icons.jsx';
 
-interface StatsDashboardProps {
-  flights: Flight[];
-}
-
-const StatCard: React.FC<{ icon: React.ReactNode; label: string; value: string | number }> = ({ icon, label, value }) => (
+const StatCard = ({ icon, label, value }) => (
   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md flex items-center space-x-4 transition-transform transform hover:scale-105">
     <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
       {icon}
@@ -18,7 +13,7 @@ const StatCard: React.FC<{ icon: React.ReactNode; label: string; value: string |
   </div>
 );
 
-const MobileStatItem: React.FC<{ icon: React.ReactNode; label: string; value: string | number }> = ({ icon, label, value }) => (
+const MobileStatItem = ({ icon, label, value }) => (
   <div className="flex flex-col items-center text-center space-y-1">
     {icon}
     <p className="text-lg font-bold text-slate-700 dark:text-slate-200">{value}</p>
@@ -26,21 +21,21 @@ const MobileStatItem: React.FC<{ icon: React.ReactNode; label: string; value: st
   </div>
 );
 
-const StatsDashboard: React.FC<StatsDashboardProps> = ({ flights }) => {
+const StatsDashboard = ({ flights }) => {
   const stats = useMemo(() => {
     const totalFlights = flights.length;
     const totalDistance = flights.reduce((sum, flight) => sum + flight.distance, 0);
     const totalDuration = flights.reduce((sum, flight) => sum + flight.duration, 0);
     const uniqueAirports = new Set(flights.flatMap(f => [f.from, f.to])).size;
 
-    const formatDuration = (minutes: number) => {
+    const formatDuration = (minutes) => {
       const d = Math.floor(minutes / (24 * 60));
       const h = Math.floor((minutes % (24 * 60)) / 60);
       const m = minutes % 60;
       return `${d}d ${h}h ${m}m`;
     };
 
-    const formatDurationCompact = (minutes: number) => {
+    const formatDurationCompact = (minutes) => {
       const d = Math.floor(minutes / (24 * 60));
       const h = Math.floor((minutes % (24 * 60)) / 60);
       const m = minutes % 60;
@@ -50,7 +45,7 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ flights }) => {
       return `${m}m`;
     };
     
-    const formatDistanceCompact = (distance: number) => {
+    const formatDistanceCompact = (distance) => {
         if (distance >= 1000000) {
             return `${(distance / 1000000).toFixed(1)}m`;
         }

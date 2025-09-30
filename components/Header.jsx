@@ -1,19 +1,8 @@
-
 import React from 'react';
-import { WingitIcon, UserIcon } from './icons';
-import { supabase } from '../services/supabaseClient';
-import { Session } from '@supabase/supabase-js';
+import { WingitIcon, UserIcon } from './icons.jsx';
+import { supabase } from '../services/supabaseClient.js';
 
-type View = 'dashboard' | 'profile';
-
-interface HeaderProps {
-    session: Session | null;
-    profile: { username: string } | null;
-    currentView: View;
-    setView: (view: View) => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ session, profile, currentView, setView }) => {
+const Header = ({ session, profile, currentView, setView }) => {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
   };

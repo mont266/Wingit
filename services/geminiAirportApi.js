@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from '@google/genai';
 
 const apiKey = process.env.API_KEY;
@@ -15,13 +14,6 @@ if (!isGeminiConfigured) {
 // Use a placeholder key to prevent the constructor from throwing an error and crashing the app.
 const ai = new GoogleGenAI({ apiKey: apiKey || 'placeholder-api-key' });
 
-
-interface AirportCoord {
-    iata: string;
-    lat: number;
-    lon: number;
-}
-
 const coordinatesSchema = {
   type: Type.ARRAY,
   items: {
@@ -36,8 +28,8 @@ const coordinatesSchema = {
 };
 
 export const getAirportCoordinates = async (
-  iataCodes: string[]
-): Promise<Record<string, { lat: number; lon: number }>> => {
+  iataCodes
+) => {
   if (iataCodes.length === 0) {
     return {};
   }
@@ -65,12 +57,12 @@ export const getAirportCoordinates = async (
         throw new Error("The AI API returned an empty response for coordinates.");
     }
     
-    const coordsArray = JSON.parse(jsonText) as AirportCoord[];
+    const coordsArray = JSON.parse(jsonText);
 
     const coordsMap = coordsArray.reduce((acc, curr) => {
         acc[curr.iata] = { lat: curr.lat, lon: curr.lon };
         return acc;
-    }, {} as Record<string, { lat: number; lon: number }>);
+    }, {});
     
     return coordsMap;
 

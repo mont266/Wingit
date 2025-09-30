@@ -1,18 +1,17 @@
-
 import React, { useState } from 'react';
-import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
-import { WingitIcon, SpinnerIcon } from './icons';
+import { supabase, isSupabaseConfigured } from '../services/supabaseClient.js';
+import { WingitIcon, SpinnerIcon } from './icons.jsx';
 
-const Auth: React.FC = () => {
+const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
 
-  const handleAuth = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAuth = async (event) => {
     event.preventDefault();
     setLoading(true);
     setError(null);

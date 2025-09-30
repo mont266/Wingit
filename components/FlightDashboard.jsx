@@ -1,31 +1,21 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
-import { useFlights } from '../hooks/useFlights';
-import { parseMyFlightRadarCsv } from '../services/csvParser';
-import { Flight } from '../types';
-import Header from './Header';
-import StatsDashboard from './StatsDashboard';
-import FlightList from './FlightList';
-import AddFlightModal from './AddFlightModal';
-import ProfilePage from './ProfilePage';
-import { PlusIcon, EmptyStateIcon, SpinnerIcon } from './icons';
-import { Session } from '@supabase/supabase-js';
+import { useFlights } from '../hooks/useFlights.js';
+import { parseMyFlightRadarCsv } from '../services/csvParser.js';
+import Header from './Header.jsx';
+import StatsDashboard from './StatsDashboard.jsx';
+import FlightList from './FlightList.jsx';
+import AddFlightModal from './AddFlightModal.jsx';
+import ProfilePage from './ProfilePage.jsx';
+import { PlusIcon, EmptyStateIcon, SpinnerIcon } from './icons.jsx';
 
-interface FlightDashboardProps {
-    session: Session;
-    profile: { username: string; role: string; } | null;
-}
-
-type View = 'dashboard' | 'profile';
-
-const FlightDashboard: React.FC<FlightDashboardProps> = ({ session, profile }) => {
+const FlightDashboard = ({ session, profile }) => {
   const { flights, loading: flightsLoading, addFlight, addMultipleFlights, deleteFlight } = useFlights(session.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<string>('all');
+  const [error, setError] = useState(null);
+  const [selectedYear, setSelectedYear] = useState('all');
   const [showICAO, setShowICAO] = useState(false);
-  const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [currentView, setCurrentView] = useState('dashboard');
 
   const availableYears = useMemo(() => {
     if (flights.length === 0) {
@@ -58,7 +48,7 @@ const FlightDashboard: React.FC<FlightDashboardProps> = ({ session, profile }) =
   }, [filteredFlights]);
 
 
-  const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback(async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -67,7 +57,7 @@ const FlightDashboard: React.FC<FlightDashboardProps> = ({ session, profile }) =
     try {
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const text = e.target?.result as string;
+        const text = e.target?.result;
         if (text) {
           try {
             const parsedFlights = parseMyFlightRadarCsv(text);
@@ -93,7 +83,7 @@ const FlightDashboard: React.FC<FlightDashboardProps> = ({ session, profile }) =
     event.target.value = '';
   }, [addMultipleFlights]);
 
-  const handleAddFlight = async (flight: Omit<Flight, 'id'>) => {
+  const handleAddFlight = async (flight) => {
      try {
         await addFlight(flight);
         setIsModalOpen(false);
@@ -104,7 +94,7 @@ const FlightDashboard: React.FC<FlightDashboardProps> = ({ session, profile }) =
     }
   };
   
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = React.useRef(null);
 
   const handleImportClick = () => {
     fileInputRef.current?.click();

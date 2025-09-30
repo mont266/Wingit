@@ -1,6 +1,4 @@
-import { Flight } from '../types';
-
-const parseDuration = (durationStr: string): number => {
+const parseDuration = (durationStr) => {
   if (!durationStr) return 0;
 
   // Try parsing "Xh Ym" format (e.g., "1h 30m")
@@ -32,13 +30,7 @@ const parseDuration = (durationStr: string): number => {
   return 0; // Return 0 if no format matches
 };
 
-interface LocationInfo {
-    name: string;
-    iata: string;
-    icao?: string;
-}
-
-const parseLocation = (location: string): LocationInfo => {
+const parseLocation = (location) => {
     if (!location) return { name: 'N/A', iata: 'N/A' };
 
     // Regex for "Airport Name (IATA / ICAO)"
@@ -70,7 +62,7 @@ const parseLocation = (location: string): LocationInfo => {
 };
 
 
-export const parseMyFlightRadarCsv = (csvText: string): Omit<Flight, 'id'>[] => {
+export const parseMyFlightRadarCsv = (csvText) => {
   const lines = csvText.trim().split('\n');
   if (lines.length < 2) {
     throw new Error("CSV file is empty or has no data rows.");
@@ -80,7 +72,7 @@ export const parseMyFlightRadarCsv = (csvText: string): Omit<Flight, 'id'>[] => 
   const dataLines = lines.slice(1);
 
   // Helper to find index for potential column names
-  const findIndex = (...names: string[]) => {
+  const findIndex = (...names) => {
     for (const name of names) {
       const index = header.indexOf(name);
       if (index !== -1) return index;
@@ -99,7 +91,7 @@ export const parseMyFlightRadarCsv = (csvText: string): Omit<Flight, 'id'>[] => 
     aircraft: findIndex('Aircraft type', 'Aircraft'), // Handle both possible names
   };
   
-  const requiredColumns: { key: keyof typeof columnIndices; name: string }[] = [
+  const requiredColumns = [
       { key: 'date', name: 'Date' },
       { key: 'from', name: 'From' },
       { key: 'to', name: 'To' },

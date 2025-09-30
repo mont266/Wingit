@@ -1,11 +1,8 @@
-
 import { useState, useEffect, useCallback } from 'react';
-import { Flight } from '../types';
-import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
-import { User } from '@supabase/supabase-js';
+import { supabase, isSupabaseConfigured } from '../services/supabaseClient.js';
 
-export const useFlights = (user: User | null) => {
-  const [flights, setFlights] = useState<Flight[]>([]);
+export const useFlights = (user) => {
+  const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const getFlights = useCallback(async () => {
@@ -26,7 +23,7 @@ export const useFlights = (user: User | null) => {
       }
 
       if (data) {
-        setFlights(data as Flight[]);
+        setFlights(data);
       }
     } catch (error) {
       console.error('Error fetching flights:', error);
@@ -45,7 +42,7 @@ export const useFlights = (user: User | null) => {
     }
   }, [user, getFlights]);
 
-  const addFlight = useCallback(async (flightData: Omit<Flight, 'id'>) => {
+  const addFlight = useCallback(async (flightData) => {
     if (!user || !isSupabaseConfigured) throw new Error("Application not configured or user not logged in");
     try {
       // Supabase will auto-generate the 'id' (if it's a PK with a default value like uuid_generate_v4())
@@ -61,7 +58,7 @@ export const useFlights = (user: User | null) => {
     }
   }, [user, getFlights]);
   
-  const addMultipleFlights = useCallback(async (newFlights: Omit<Flight, 'id'>[]) => {
+  const addMultipleFlights = useCallback(async (newFlights) => {
     if (!user || !isSupabaseConfigured) throw new Error("Application not configured or user not logged in");
 
     const { data: existingDbFlights, error: fetchError } = await supabase
@@ -93,7 +90,7 @@ export const useFlights = (user: User | null) => {
     }
   }, [user, getFlights]);
 
-  const deleteFlight = useCallback(async (flightId: string) => {
+  const deleteFlight = useCallback(async (flightId) => {
     if (!user || !isSupabaseConfigured) {
         console.error("Cannot delete flight: Application not configured or user not logged in.");
         return;

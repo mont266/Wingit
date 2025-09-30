@@ -1,16 +1,7 @@
-
-import React, { useState, FormEvent } from 'react';
-import { Flight, COMMON_AIRLINES } from '../types';
-import { findFlightDetailsWithGemini } from '../services/geminiFlightApi';
-import { XIcon, SearchIcon, SpinnerIcon, PlaneTakeoffIcon, PlaneLandingIcon } from './icons';
-
-interface AddFlightModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddFlight: (flight: Omit<Flight, 'id'>) => Promise<void>;
-}
-
-type ModalStep = 'search' | 'loading' | 'confirm' | 'manual';
+import React, { useState } from 'react';
+import { COMMON_AIRLINES } from '../types.js';
+import { findFlightDetailsWithGemini } from '../services/geminiFlightApi.js';
+import { XIcon, SearchIcon, SpinnerIcon, PlaneTakeoffIcon, PlaneLandingIcon } from './icons.jsx';
 
 const initialSearchState = {
     airline: '',
@@ -29,13 +20,13 @@ const initialManualState = {
   duration: '',
 };
 
-const AddFlightModal: React.FC<AddFlightModalProps> = ({ isOpen, onClose, onAddFlight }) => {
-  const [step, setStep] = useState<ModalStep>('search');
+const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
+  const [step, setStep] = useState('search');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchData, setSearchData] = useState(initialSearchState);
   const [manualData, setManualData] = useState(initialManualState);
-  const [foundFlight, setFoundFlight] = useState<Omit<Flight, 'id'> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [foundFlight, setFoundFlight] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleClose = () => {
     setStep('search');
@@ -47,7 +38,7 @@ const AddFlightModal: React.FC<AddFlightModalProps> = ({ isOpen, onClose, onAddF
     onClose();
   };
   
-  const handleFindFlight = async (e: FormEvent) => {
+  const handleFindFlight = async (e) => {
     e.preventDefault();
     setError(null);
     setStep('loading');
@@ -82,7 +73,7 @@ const AddFlightModal: React.FC<AddFlightModalProps> = ({ isOpen, onClose, onAddF
     }
   };
 
-  const handleManualSubmit = async (e: FormEvent) => {
+  const handleManualSubmit = async (e) => {
     e.preventDefault();
     const fromIata = manualData.from.toUpperCase();
     const toIata = manualData.to.toUpperCase();
@@ -160,7 +151,7 @@ const AddFlightModal: React.FC<AddFlightModalProps> = ({ isOpen, onClose, onAddF
         );
 
       case 'manual':
-        const ManualInputField: React.FC<{label: string, id: keyof typeof manualData, type: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, placeholder?: string, required?: boolean}> = ({ label, id, ...props }) => (
+        const ManualInputField = ({ label, id, ...props }) => (
             <div>
                 <label htmlFor={id} className="block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
                 <input id={id} name={id} {...props} className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
