@@ -5,6 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wingit - Your Flight Journey</title>
+    <!-- Script for local development environment variables. MUST be before other scripts. -->
+    <script src="/env.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -14,6 +16,15 @@
               'sky-blue': '#87CEEB',
               'deep-sky-blue': '#00BFFF',
               'night-sky': '#0c1445',
+            },
+            keyframes: {
+              'fade-in': {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+            },
+            animation: {
+              'fade-in': 'fade-in 0.5s ease-out',
             },
           }
         }
@@ -32,10 +43,12 @@
 </script>
 <!-- Add Babel Standalone for in-browser JSX transpilation -->
 <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+<link rel="stylesheet" href="/index.css">
 </head>
   <body class="bg-slate-100 dark:bg-slate-900">
     <div id="root"></div>
     <!-- Change script type to text/babel for Babel to transpile it -->
     <script type="text/babel" data-type="module" src="/index.jsx"></script>
-  </body>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

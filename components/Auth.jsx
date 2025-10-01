@@ -75,7 +75,7 @@ const Auth = () => {
                     </label>
                     <input
                         id="username"
-                        className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
                         type="text"
                         placeholder="your_username"
                         value={username}
@@ -91,7 +91,7 @@ const Auth = () => {
               </label>
               <input
                 id="email"
-                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
                 type="email"
                 placeholder="you@example.com"
                 value={email}
@@ -106,7 +106,7 @@ const Auth = () => {
               </label>
               <input
                 id="password"
-                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
                 type="password"
                 placeholder="••••••••"
                 value={password}

@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { PlaneTakeoffIcon, PlaneLandingIcon, TrashIcon, CalendarIcon, HashtagIcon, AirlineIcon, AircraftIcon, ClockIcon, DistanceIcon, ChevronDownIcon } from './icons.jsx';
+import { PlaneTakeoffIcon, PlaneLandingIcon, TrashIcon, CalendarIcon, HashtagIcon, AirlineIcon, AircraftIcon, ClockIcon, DistanceIcon, ChevronDownIcon, SeatIcon, EditIcon } from './icons.jsx';
+import { useSettings } from '../contexts/SettingsContext.jsx';
+import { KM_TO_MILES } from '../services/geoUtils.js';
 
-const FlightItem = ({ flight, onDelete, showICAO }) => {
+const FlightItem = ({ flight, onDelete, onEdit, showICAO }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { distanceUnit } = useSettings();
     
   const formatDuration = (minutes) => {
     const h = Math.floor(minutes / 60);
@@ -41,6 +44,9 @@ const FlightItem = ({ flight, onDelete, showICAO }) => {
         )}
     </p>
   );
+
+  const displayDistance = distanceUnit === 'mi' ? flight.distance * KM_TO_MILES : flight.distance;
+  const distanceLabel = distanceUnit === 'mi' ? 'mi' : 'km';
 
   return (
     <div>
@@ -82,9 +88,22 @@ const FlightItem = ({ flight, onDelete, showICAO }) => {
                 <div className="flex items-center"><HashtagIcon className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400"/> Flight: <span className="font-medium ml-1 text-slate-800 dark:text-slate-200 truncate">{flight.flightNumber}</span></div>
                 <div className="flex items-center"><AircraftIcon className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400"/> Aircraft: <span className="font-medium ml-1 text-slate-800 dark:text-slate-200 truncate">{flight.aircraft}</span></div>
                 <div className="flex items-center"><ClockIcon className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400"/> Duration: <span className="font-medium ml-1 text-slate-800 dark:text-slate-200">{formatDuration(flight.duration)}</span></div>
-                <div className="flex items-center"><DistanceIcon className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400"/> Distance: <span className="font-medium ml-1 text-slate-800 dark:text-slate-200">{flight.distance.toLocaleString()} km</span></div>
+                <div className="flex items-center"><DistanceIcon className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400"/> Distance: <span className="font-medium ml-1 text-slate-800 dark:text-slate-200">{Math.round(displayDistance).toLocaleString()} {distanceLabel}</span></div>
+                {flight.seat_number && (
+                  <div className="flex items-center"><SeatIcon className="w-4 h-4 mr-2 text-slate-500 dark:text-slate-400"/> Seat: <span className="font-medium ml-1 text-slate-800 dark:text-slate-200">{flight.seat_number}</span></div>
+                )}
             </div>
-            <div className="self-start sm:self-center flex-shrink-0">
+            <div className="self-start sm:self-center flex-shrink-0 flex items-center space-x-1">
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(flight);
+                    }}
+                    className="p-2 text-slate-500 hover:text-blue-500 hover:bg-blue-100 dark:hover:bg-slate-700 dark:hover:text-blue-400 rounded-full transition-colors duration-200"
+                    aria-label={`Edit flight from ${flight.from} to ${flight.to} on ${flight.date}`}
+                >
+                    <EditIcon className="w-5 h-5" />
+                </button>
                 <button
                     onClick={(e) => {
                         e.stopPropagation();

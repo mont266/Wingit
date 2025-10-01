@@ -1,14 +1,15 @@
 export const AIRPORT_DATA = [
-  // FIX: Corrected IATA code from airport name to 'ATL'.
   { iata: 'ATL', icao: 'KATL', name: 'Hartsfield-Jackson Atlanta International Airport', city: 'Atlanta', country: 'United States', lat: 33.6407, lon: -84.4277 },
   { iata: 'DXB', icao: 'OMDB', name: 'Dubai International Airport', city: 'Dubai', country: 'United Arab Emirates', lat: 25.2532, lon: 55.3657 },
+  { iata: 'LDY', icao: 'EGAE', name: 'City of Derry Airport', city: 'Derry/Londonderry', country: 'United Kingdom', lat: 55.0397, lon: 7.1558 },
+  { iata: 'NCL', icao: 'EGNT', name: 'Newcastle International Airport', city: 'Newcastle Upon Tyne', country: 'United Kingdom', lat: 55.0393, lon: 1.6931},
   { iata: 'DFW', icao: 'KDFW', name: 'Dallas/Fort Worth International Airport', city: 'Dallas', country: 'United States', lat: 32.8998, lon: -97.0403 },
   { iata: 'LHR', icao: 'EGLL', name: 'London Heathrow Airport', city: 'London', country: 'United Kingdom', lat: 51.4700, lon: -0.4543 },
   { iata: 'HND', icao: 'RJTT', name: 'Tokyo Haneda Airport', city: 'Tokyo', country: 'Japan', lat: 35.5494, lon: 139.7798 },
   { iata: 'DEN', icao: 'KDEN', name: 'Denver International Airport', city: 'Denver', country: 'United States', lat: 39.8561, lon: -104.6737 },
   { iata: 'IST', icao: 'LTFM', name: 'Istanbul Airport', city: 'Istanbul', country: 'Turkey', lat: 41.2753, lon: 28.7519 },
   { iata: 'LAX', icao: 'KLAX', name: 'Los Angeles International Airport', city: 'Los Angeles', country: 'United States', lat: 33.9416, lon: -118.4085 },
-  { iata: 'ORD', icao: 'KORD', name: 'O\'Hare International Airport', city: 'Chicago', country: 'United States', lat: 41.9742, lon: -87.9073 },
+  { iata: 'ORD', icao: 'KORD', name: "O'Hare International Airport", city: 'Chicago', country: 'United States', lat: 41.9742, lon: -87.9073 },
   { iata: 'DEL', icao: 'VIDP', name: 'Indira Gandhi International Airport', city: 'Delhi', country: 'India', lat: 28.5562, lon: 77.1000 },
   { iata: 'CDG', icao: 'LFPG', name: 'Charles de Gaulle Airport', city: 'Paris', country: 'France', lat: 49.0097, lon: 2.5479 },
   { iata: 'CAN', icao: 'ZGGG', name: 'Guangzhou Baiyun International Airport', city: 'Guangzhou', country: 'China', lat: 23.3924, lon: 113.2988 },
@@ -128,7 +129,7 @@ export const AIRPORT_DATA = [
   { iata: 'OGG', icao: 'PHOG', name: 'Kahului Airport', city: 'Kahului', country: 'United States', lat: 20.898, lon: -156.430 },
   { iata: 'KOA', icao: 'PHKO', name: 'Kona International Airport', city: 'Kailua-Kona', country: 'United States', lat: 19.738, lon: -156.045 },
   { iata: 'LIH', icao: 'PHLI', name: 'Lihue Airport', city: 'Lihue', country: 'United States', lat: 21.976, lon: -159.339 },
-  { iata: 'PPT', icao: 'NTAA', name: 'Faa\'a International Airport', city: 'Papeete', country: 'French Polynesia', lat: -17.556, lon: -149.611 },
+  { iata: 'PPT', icao: 'NTAA', name: "Faa'a International Airport", city: 'Papeete', country: 'French Polynesia', lat: -17.556, lon: -149.611 },
   { iata: 'NAN', icao: 'NFFN', name: 'Nadi International Airport', city: 'Nadi', country: 'Fiji', lat: -17.755, lon: 177.443 },
   { iata: 'GUM', icao: 'PGUM', name: 'Antonio B. Won Pat International Airport', city: 'Hagåtña', country: 'Guam', lat: 13.483, lon: 144.796 },
   { iata: 'MDW', icao: 'KMDW', name: 'Midway International Airport', city: 'Chicago', country: 'United States', lat: 41.786, lon: -87.752 },
@@ -171,12 +172,12 @@ export const AIRPORT_DATA = [
   { iata: 'BHX', icao: 'EGBB', name: 'Birmingham Airport', city: 'Birmingham', country: 'United Kingdom', lat: 52.453, lon: -1.748 },
   { iata: 'BRS', icao: 'EGGD', name: 'Bristol Airport', city: 'Bristol', country: 'United Kingdom', lat: 51.382, lon: -2.719 },
   { iata: 'ORY', icao: 'LFPO', name: 'Orly Airport', city: 'Paris', country: 'France', lat: 48.723, lon: 2.379 },
-  { iata: 'NCE', icao: 'LFMN', name: 'Nice Côte d\'Azur Airport', city: 'Nice', country: 'France', lat: 43.665, lon: 7.215 },
+  { iata: 'NCE', icao: 'LFMN', name: "Nice Côte d'Azur Airport", city: 'Nice', country: 'France', lat: 43.665, lon: 7.215 },
   { iata: 'LYS', icao: 'LFLL', name: 'Lyon–Saint-Exupéry Airport', city: 'Lyon', country: 'France', lat: 45.725, lon: 5.081 },
   { iata: 'MRS', icao: 'LFML', name: 'Marseille Provence Airport', city: 'Marseille', country: 'France', lat: 43.436, lon: 5.215 },
   { iata: 'TLS', icao: 'LFBO', name: 'Toulouse–Blagnac Airport', city: 'Toulouse', country: 'France', lat: 43.635, lon: 1.363 },
   { iata: 'DUS', icao: 'EDDL', name: 'Düsseldorf Airport', city: 'Düsseldorf', country: 'Germany', lat: 51.289, lon: 6.766 },
-  { iata: 'TXL', icao: 'EDDT', name: 'Berlin Tegel Airport', city: 'Berlin', country: 'Germany', lat: 52.559, lon: 13.287 },
+  { iata: 'BER', icao: 'EDDB', name: 'Berlin Brandenburg Airport', city: 'Berlin', country: 'Germany', lat: 52.3667, lon: 13.5033 },
   { iata: 'HAM', icao: 'EDDH', name: 'Hamburg Airport', city: 'Hamburg', country: 'Germany', lat: 53.630, lon: 9.988 },
   { iata: 'STR', icao: 'EDDS', name: 'Stuttgart Airport', city: 'Stuttgart', country: 'Germany', lat: 48.689, lon: 9.221 },
   { iata: 'CGN', icao: 'EDDK', name: 'Cologne Bonn Airport', city: 'Cologne', country: 'Germany', lat: 50.865, lon: 7.142 },
@@ -191,6 +192,7 @@ export const AIRPORT_DATA = [
   { iata: 'TFS', icao: 'GCTS', name: 'Tenerife South Airport', city: 'Tenerife', country: 'Spain', lat: 28.044, lon: -16.572 },
   { iata: 'LPA', icao: 'GCLP', name: 'Gran Canaria Airport', city: 'Gran Canaria', country: 'Spain', lat: 27.931, lon: -15.386 },
   { iata: 'IBZ', icao: 'LEIB', name: 'Ibiza Airport', city: 'Ibiza', country: 'Spain', lat: 38.872, lon: 1.373 },
+  { iata: 'ACE', icao: 'GCRR', name: 'Lanzarote Airport', city: 'Lanzarote', country: 'Spain', lat: 28.9455, lon: -13.6052 },
   { iata: 'FAO', icao: 'LPFR', name: 'Faro Airport', city: 'Faro', country: 'Portugal', lat: 37.014, lon: -7.965 },
   { iata: 'OPO', icao: 'LPPR', name: 'Porto Airport', city: 'Porto', country: 'Portugal', lat: 41.248, lon: -8.681 },
   { iata: 'AYT', icao: 'LTAI', name: 'Antalya Airport', city: 'Antalya', country: 'Turkey', lat: 36.898, lon: 30.800 },
@@ -206,7 +208,6 @@ export const AIRPORT_DATA = [
   { iata: 'TIV', icao: 'LYTV', name: 'Tivat Airport', city: 'Tivat', country: 'Montenegro', lat: 42.404, lon: 18.723 },
   { iata: 'BEG', icao: 'LYBE', name: 'Belgrade Nikola Tesla Airport', city: 'Belgrade', country: 'Serbia', lat: 44.818, lon: 20.309 },
   { iata: 'SOF', icao: 'LBSF', name: 'Sofia Airport', city: 'Sofia', country: 'Bulgaria', lat: 42.695, lon: 23.411 },
-  { iata: 'SJU', icao: 'TJSJ', name: 'Luis Muñoz Marín International Airport', city: 'San Juan', country: 'Puerto Rico', lat: 18.4394, lon: -66.0018 },
   { iata: 'PTY', icao: 'MPTO', name: 'Tocumen International Airport', city: 'Panama City', country: 'Panama', lat: 9.071, lon: -79.383 },
   { iata: 'SJO', icao: 'MROC', name: 'Juan Santamaría International Airport', city: 'San José', country: 'Costa Rica', lat: 9.993, lon: -84.208 },
   { iata: 'HAV', icao: 'MUHA', name: 'José Martí International Airport', city: 'Havana', country: 'Cuba', lat: 22.989, lon: -82.409 },
@@ -234,10 +235,9 @@ export const AIRPORT_DATA = [
   { iata: 'SSA', icao: 'SBSV', name: 'Salvador International Airport', city: 'Salvador', country: 'Brazil', lat: -12.910, lon: -38.331 },
   { iata: 'REC', icao: 'SBRF', name: 'Recife/Guararapes–Gilberto Freyre International Airport', city: 'Recife', country: 'Brazil', lat: -8.126, lon: -34.922 },
   { iata: 'FOR', icao: 'SBFZ', name: 'Fortaleza-Pinto Martins International Airport', city: 'Fortaleza', country: 'Brazil', lat: -3.776, lon: -38.532 },
-  // FIX: Added missing 'name' property key.
   { iata: 'POA', icao: 'SBPA', name: 'Salgado Filho International Airport', city: 'Porto Alegre', country: 'Brazil', lat: -29.993, lon: -51.171 },
-  // FIX: Added missing 'name' property key.
   { iata: 'CWB', icao: 'SBCT', name: 'Afonso Pena International Airport', city: 'Curitiba', country: 'Brazil', lat: -25.528, lon: -49.175 },
-  // FIX: Added missing 'name' property key.
-  { iata: 'MAO', icao: 'SBEG', name: 'Eduardo Gomes International Airport', city: 'Manaus', country: 'Brazil', lat: -3.038, lon: -60.049 }
+  { iata: 'MAO', icao: 'SBEG', name: 'Eduardo Gomes International Airport', city: 'Manaus', country: 'Brazil', lat: -3.038, lon: -60.049 },
+  { iata: 'BFS', icao: 'EGAA', name: 'Belfast International Airport', city: 'Belfast', country: 'United Kingdom', lat: 54.6575, lon: -6.2158 },
+  { iata: 'BHD', icao: 'EGAC', name: 'George Best Belfast City Airport', city: 'Belfast', country: 'United Kingdom', lat: 54.6181, lon: -5.8725 }
 ];

@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { COMMON_AIRLINES } from '../types.js';
 import { findFlightDetailsWithGemini } from '../services/geminiFlightApi.js';
 import { XIcon, SearchIcon, SpinnerIcon, PlaneTakeoffIcon, PlaneLandingIcon } from './icons.jsx';
+import { useSettings } from '../contexts/SettingsContext.jsx';
+import { KM_TO_MILES } from '../services/geoUtils.js';
 
 const initialSearchState = {
     airline: '',
@@ -16,25 +18,48 @@ const initialManualState = {
   airline: '',
   flightNumber: '',
   aircraft: '',
-  distance: '',
   duration: '',
+  seat_number: '',
 };
 
-const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
-  const [step, setStep] = useState('search');
+const AddFlightModal = ({ isOpen, onClose, onAddFlight, onUpdateFlight, flightToEdit }) => {
+  const isEditMode = !!flightToEdit;
+  const [step, setStep] = useState(isEditMode ? 'manual' : 'search');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchData, setSearchData] = useState(initialSearchState);
   const [manualData, setManualData] = useState(initialManualState);
   const [foundFlight, setFoundFlight] = useState(null);
   const [error, setError] = useState(null);
+  const { distanceUnit } = useSettings();
+
+  useEffect(() => {
+    if (isOpen) {
+        setError(null);
+        if (isEditMode) {
+            setStep('manual');
+            setManualData({
+                date: flightToEdit.date,
+                from: flightToEdit.from,
+                to: flightToEdit.to,
+                airline: flightToEdit.airline,
+                flightNumber: flightToEdit.flightNumber,
+                aircraft: flightToEdit.aircraft,
+                duration: flightToEdit.duration.toString(),
+                seat_number: flightToEdit.seat_number || '',
+            });
+        } else {
+            // Reset for "add" mode
+            setStep('search');
+            setSearchData(initialSearchState);
+            setManualData(initialManualState);
+            setFoundFlight(null);
+        }
+    }
+  }, [isOpen, flightToEdit, isEditMode]);
+
 
   const handleClose = () => {
-    setStep('search');
-    setSearchData(initialSearchState);
-    setManualData(initialManualState);
-    setFoundFlight(null);
-    setError(null);
-    setIsSubmitting(false);
+    setIsSubmitting(false); // Ensure submitting state is reset
     onClose();
   };
   
@@ -63,11 +88,16 @@ const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
   const handleConfirmFlight = async () => {
     if (foundFlight) {
       setIsSubmitting(true);
+      setError(null); // Clear previous errors
       try {
-        await onAddFlight(foundFlight);
-        handleClose();
+        await onAddFlight({
+          ...foundFlight,
+          seat_number: foundFlight.seat_number?.trim() || null
+        });
+        // On success, parent will close the modal
       } catch (e) {
-        setError("Failed to save flight. Please try again.");
+        const errorMessage = e instanceof Error ? e.message : "Failed to save flight. Please try again.";
+        setError(errorMessage);
         setIsSubmitting(false);
       }
     }
@@ -75,24 +105,34 @@ const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
 
   const handleManualSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     const fromIata = manualData.from.toUpperCase();
     const toIata = manualData.to.toUpperCase();
 
     const flightData = {
-      ...manualData,
+      date: manualData.date,
       from: fromIata,
       to: toIata,
-      fromName: fromIata,
-      toName: toIata,
-      distance: parseInt(manualData.distance, 10) || 0,
+      airline: manualData.airline,
+      flightNumber: manualData.flightNumber,
+      aircraft: manualData.aircraft,
       duration: parseInt(manualData.duration, 10) || 0,
+      seat_number: manualData.seat_number.trim() || null,
     };
+
     setIsSubmitting(true);
     try {
-        await onAddFlight(flightData);
-        handleClose();
+        if (isEditMode) {
+            await onUpdateFlight(flightToEdit.id, flightData);
+        } else {
+            // fromName/toName default to IATA for new manual entries.
+            // The hook will resolve the full name on its own if the airport exists.
+            await onAddFlight({ ...flightData, fromName: fromIata, toName: toIata });
+        }
+        // Success is handled by parent, which calls onClose
     } catch (e) {
-        setError("Failed to save flight. Please try again.");
+        const errorMessage = e instanceof Error ? e.message : "Failed to save flight. Please try again.";
+        setError(errorMessage);
         setIsSubmitting(false);
     }
   };
@@ -100,6 +140,11 @@ const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
   if (!isOpen) return null;
   
   const renderContent = () => {
+    // The direct assignment `step = 'manual'` was causing a crash because
+    // 'step' is a const from a useState hook. The useEffect above already
+    // correctly handles setting the step for edit mode, so this logic was
+    // both incorrect and redundant.
+    
     switch (step) {
       case 'loading':
         return (
@@ -111,6 +156,10 @@ const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
       
       case 'confirm':
         if (!foundFlight) return null;
+
+        const displayDistance = distanceUnit === 'mi' ? foundFlight.distance * KM_TO_MILES : foundFlight.distance;
+        const distanceLabel = distanceUnit === 'mi' ? 'mi' : 'km';
+        
         return (
             <div>
                 <div className="p-6">
@@ -128,16 +177,28 @@ const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
                          <div className="text-center text-sm text-slate-500 dark:text-slate-400 -mt-2">
                            <span className="truncate block">{foundFlight.fromName} to {foundFlight.toName}</span>
                         </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-300 grid grid-cols-2 gap-2 pt-2">
+                        <div className="text-sm text-slate-600 dark:text-slate-300 grid grid-cols-2 gap-x-4 gap-y-2 pt-2">
                            <div><strong>Airline:</strong> {foundFlight.airline}</div>
                            <div><strong>Flight:</strong> {foundFlight.flightNumber}</div>
                            <div><strong>Date:</strong> {foundFlight.date}</div>
                            <div><strong>Aircraft:</strong> {foundFlight.aircraft}</div>
-                           <div><strong>Distance:</strong> {foundFlight.distance.toLocaleString()} km</div>
+                           <div><strong>Distance:</strong> {Math.round(displayDistance).toLocaleString()} {distanceLabel}</div>
                            <div><strong>Duration:</strong> {Math.floor(foundFlight.duration/60)}h {foundFlight.duration%60}m</div>
+                           <div className="col-span-2 mt-1">
+                                <label htmlFor="confirm-seat" className="block text-sm font-medium mb-1">Seat Number (Optional)</label>
+                                <input 
+                                    id="confirm-seat"
+                                    type="text" 
+                                    value={foundFlight.seat_number || ''}
+                                    onChange={e => setFoundFlight({...foundFlight, seat_number: e.target.value})}
+                                    placeholder="e.g., 14A"
+                                    className="w-full px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-sm shadow-sm"
+                                    aria-label="Seat Number"
+                                />
+                            </div>
                         </div>
                     </div>
-                    {error && <div className="mt-4 text-xs text-red-500 text-center" role="alert">{error}</div>}
+                    {error && <div className="mt-4 p-3 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-200 rounded-md text-sm" role="alert">{error}</div>}
                 </div>
                 <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
                     <button onClick={() => setStep('search')} disabled={isSubmitting} className="text-sm font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white disabled:opacity-50">
@@ -160,22 +221,24 @@ const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
         return (
             <form onSubmit={handleManualSubmit}>
                 <div className="p-6">
-                    <h3 className="font-semibold text-lg mb-4 text-slate-700 dark:text-slate-200">Enter Flight Details Manually</h3>
-                     {error && <div className="mb-4 text-xs text-red-500 text-center" role="alert">{error}</div>}
+                    <h3 className="font-semibold text-lg mb-4 text-slate-700 dark:text-slate-200">{isEditMode ? 'Edit Flight Details' : 'Enter Flight Details Manually'}</h3>
+                     {error && <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-200 rounded-md text-sm" role="alert">{error}</div>}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <ManualInputField label="Date" id="date" type="date" value={manualData.date} onChange={e => setManualData({...manualData, date: e.target.value})} required />
                         <ManualInputField label="Flight Number" id="flightNumber" type="text" value={manualData.flightNumber} onChange={e => setManualData({...manualData, flightNumber: e.target.value})} placeholder="e.g., UA235" required />
                         <ManualInputField label="Airline" id="airline" type="text" value={manualData.airline} onChange={e => setManualData({...manualData, airline: e.target.value})} placeholder="United Airlines" required />
                         <ManualInputField label="Aircraft" id="aircraft" type="text" value={manualData.aircraft} onChange={e => setManualData({...manualData, aircraft: e.target.value})} placeholder="Boeing 787" required />
-                        <ManualInputField label="From (IATA)" id="from" type="text" value={manualData.from} onChange={e => setManualData({...manualData, from: e.target.value})} placeholder="SFO" required />
-                        <ManualInputField label="To (IATA)" id="to" type="text" value={manualData.to} onChange={e => setManualData({...manualData, to: e.target.value})} placeholder="JFK" required />
-                        <ManualInputField label="Distance (km)" id="distance" type="number" value={manualData.distance} onChange={e => setManualData({...manualData, distance: e.target.value})} placeholder="4178" required />
+                        <ManualInputField label="From (IATA)" id="from" type="text" maxLength="3" value={manualData.from} onChange={e => setManualData({...manualData, from: e.target.value})} placeholder="SFO" required />
+                        <ManualInputField label="To (IATA)" id="to" type="text" maxLength="3" value={manualData.to} onChange={e => setManualData({...manualData, to: e.target.value})} placeholder="JFK" required />
                         <ManualInputField label="Duration (min)" id="duration" type="number" value={manualData.duration} onChange={e => setManualData({...manualData, duration: e.target.value})} placeholder="330" required />
+                        <div className="sm:col-span-2">
+                            <ManualInputField label="Seat Number (Optional)" id="seat_number" type="text" value={manualData.seat_number} onChange={e => setManualData({...manualData, seat_number: e.target.value})} placeholder="e.g., 14A" />
+                        </div>
                     </div>
                 </div>
                 <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-end">
-                    <button type="submit" disabled={isSubmitting} className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center w-28">
-                       {isSubmitting ? <SpinnerIcon className="w-5 h-5"/> : 'Add Flight'}
+                    <button type="submit" disabled={isSubmitting} className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center w-36">
+                       {isSubmitting ? <SpinnerIcon className="w-5 h-5"/> : (isEditMode ? 'Save Changes' : 'Add Flight')}
                     </button>
                 </div>
             </form>
@@ -250,7 +313,7 @@ const AddFlightModal = ({ isOpen, onClose, onAddFlight }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity" role="dialog" aria-modal="true" aria-labelledby="add-flight-modal-title">
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
         <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
-          <h2 id="add-flight-modal-title" className="text-xl font-bold text-slate-800 dark:text-slate-100">Add a Flight</h2>
+          <h2 id="add-flight-modal-title" className="text-xl font-bold text-slate-800 dark:text-slate-100">{isEditMode ? 'Edit Flight' : 'Add a Flight'}</h2>
           <button onClick={handleClose} className="p-1 rounded-full text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700" aria-label="Close modal">
             <XIcon className="w-5 h-5" />
           </button>

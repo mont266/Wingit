@@ -6,16 +6,19 @@ import StatsDashboard from './StatsDashboard.jsx';
 import FlightList from './FlightList.jsx';
 import AddFlightModal from './AddFlightModal.jsx';
 import ProfilePage from './ProfilePage.jsx';
-import { PlusIcon, EmptyStateIcon, SpinnerIcon } from './icons.jsx';
+import { PlusIcon, EmptyStateIcon, SpinnerIcon, ChevronDownIcon } from './icons.jsx';
 
 const FlightDashboard = ({ session, profile }) => {
-  const { flights, loading: flightsLoading, addFlight, addMultipleFlights, deleteFlight } = useFlights(session.user);
+  const { flights, loading: flightsLoading, addFlight, addMultipleFlights, deleteFlight, updateFlight } = useFlights(session.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [flightToEdit, setFlightToEdit] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState(null);
   const [selectedYear, setSelectedYear] = useState('all');
   const [showICAO, setShowICAO] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [isUpcomingFlightsExpanded, setIsUpcomingFlightsExpanded] = useState(true);
+  const [isPastFlightsExpanded, setIsPastFlightsExpanded] = useState(true);
 
   const availableYears = useMemo(() => {
     if (flights.length === 0) {
@@ -82,15 +85,37 @@ const FlightDashboard = ({ session, profile }) => {
     }
     event.target.value = '';
   }, [addMultipleFlights]);
+  
+  const handleOpenEditModal = (flight) => {
+    setFlightToEdit(flight);
+    setIsModalOpen(true);
+  };
+  
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFlightToEdit(null);
+  };
 
-  const handleAddFlight = async (flight) => {
-     try {
-        await addFlight(flight);
-        setIsModalOpen(false);
-        setSelectedYear('all');
-    } catch(err) {
-        console.error(err);
-        setError("Failed to add flight. Please try again.");
+  const handleAddFlight = async (flightData) => {
+    try {
+      await addFlight(flightData);
+      handleCloseModal();
+      setSelectedYear('all');
+    } catch (err) {
+      console.error("Error adding flight:", err);
+      // Re-throw so the modal can catch and display the error
+      throw err;
+    }
+  };
+  
+  const handleUpdateFlight = async (flightId, data) => {
+    try {
+      await updateFlight(flightId, data);
+      handleCloseModal();
+    } catch (err) {
+      console.error("Error updating flight:", err);
+      // Re-throw so the modal can catch and display the error
+      throw err;
     }
   };
   
@@ -172,14 +197,38 @@ const FlightDashboard = ({ session, profile }) => {
           <div>
             {upcomingFlights.length > 0 && (
               <div className="flight-section">
-                <h3 className="text-center px-6 pt-8 pb-4 text-xl font-bold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Upcoming Flights</h3>
-                <FlightList flights={upcomingFlights} onDelete={deleteFlight} showICAO={showICAO} />
+                <button
+                    onClick={() => setIsUpcomingFlightsExpanded(!isUpcomingFlightsExpanded)}
+                    className="w-full text-center px-6 pt-8 pb-4 flex justify-center items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                    aria-expanded={isUpcomingFlightsExpanded}
+                    aria-controls="upcoming-flights-list"
+                >
+                    <h3 className="text-xl font-bold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Upcoming Flights</h3>
+                    <ChevronDownIcon className={`w-6 h-6 text-slate-400 transition-transform duration-300 ${isUpcomingFlightsExpanded ? 'rotate-180' : ''}`} />
+                </button>
+                {isUpcomingFlightsExpanded && (
+                    <div id="upcoming-flights-list" className="animate-fade-in">
+                        <FlightList flights={upcomingFlights} onDelete={deleteFlight} onEdit={handleOpenEditModal} showICAO={showICAO} />
+                    </div>
+                )}
               </div>
             )}
             {pastFlights.length > 0 && (
               <div className={`flight-section ${upcomingFlights.length > 0 ? 'border-t border-slate-200 dark:border-slate-700' : ''}`}>
-                <h3 className="text-center px-6 pt-8 pb-4 text-xl font-bold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Past Flights</h3>
-                <FlightList flights={pastFlights} onDelete={deleteFlight} showICAO={showICAO} />
+                 <button
+                    onClick={() => setIsPastFlightsExpanded(!isPastFlightsExpanded)}
+                    className="w-full text-center px-6 pt-8 pb-4 flex justify-center items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                    aria-expanded={isPastFlightsExpanded}
+                    aria-controls="past-flights-list"
+                >
+                    <h3 className="text-xl font-bold text-slate-700 dark:text-slate-200 tracking-wide uppercase">Past Flights</h3>
+                    <ChevronDownIcon className={`w-6 h-6 text-slate-400 transition-transform duration-300 ${isPastFlightsExpanded ? 'rotate-180' : ''}`} />
+                </button>
+                {isPastFlightsExpanded && (
+                    <div id="past-flights-list" className="animate-fade-in">
+                        <FlightList flights={pastFlights} onDelete={deleteFlight} onEdit={handleOpenEditModal} showICAO={showICAO} />
+                    </div>
+                )}
               </div>
             )}
           </div>
@@ -212,8 +261,10 @@ const FlightDashboard = ({ session, profile }) => {
 
       <AddFlightModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
         onAddFlight={handleAddFlight}
+        onUpdateFlight={handleUpdateFlight}
+        flightToEdit={flightToEdit}
       />
     </div>
   );

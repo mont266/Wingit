@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { PlaneIcon, ClockIcon, DistanceIcon, AirlineIcon, AircraftIcon, GlobeIcon } from './icons.jsx';
 import DataSeeder from './DataSeeder.jsx';
+import { useSettings } from '../contexts/SettingsContext.jsx';
+import { KM_TO_MILES } from '../services/geoUtils.js';
 
 const StatHighlightCard = ({ icon, label, value, footer }) => (
     <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md flex flex-col justify-between h-full">
@@ -27,6 +29,7 @@ const TopListItem = ({ rank, name, count, icon }) => (
 );
 
 const ProfilePage = ({ flights, profile }) => {
+    const { distanceUnit, toggleDistanceUnit } = useSettings();
 
     const stats = useMemo(() => {
         if (flights.length === 0) return null;
@@ -93,7 +96,18 @@ const ProfilePage = ({ flights, profile }) => {
                         <StatHighlightCard
                             icon={<DistanceIcon className="w-5 h-5" />}
                             label="Longest Flight by Distance"
-                            value={<>{stats.longestFlightByDistance.distance.toLocaleString()} <span className="text-base font-medium">km</span></>}
+                            value={
+                                <>
+                                {Math.round(
+                                    distanceUnit === 'mi'
+                                    ? stats.longestFlightByDistance.distance * KM_TO_MILES
+                                    : stats.longestFlightByDistance.distance
+                                ).toLocaleString()}{' '}
+                                <span className="text-base font-medium">
+                                    {distanceUnit === 'mi' ? 'mi' : 'km'}
+                                </span>
+                                </>
+                            }
                             footer={`${stats.longestFlightByDistance.from} → ${stats.longestFlightByDistance.to} on ${stats.longestFlightByDistance.airline}`}
                         />
                          <StatHighlightCard
@@ -126,7 +140,33 @@ const ProfilePage = ({ flights, profile }) => {
                  </>
             )}
 
-            {profile?.role === 'admin' && <DataSeeder />}
+            <div className="border-t border-slate-300 dark:border-slate-700 pt-8">
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Settings</h3>
+                <div className="mt-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-md flex justify-between items-center max-w-sm">
+                    <p className="font-medium text-slate-700 dark:text-slate-200">Distance Unit</p>
+                    <div className="flex items-center space-x-2">
+                        <span className={`font-semibold ${distanceUnit === 'km' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`}>KM</span>
+                        <button
+                            onClick={toggleDistanceUnit}
+                            className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-slate-800 ${distanceUnit === 'mi' ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`}
+                            role="switch"
+                            aria-checked={distanceUnit === 'mi'}
+                            aria-label={`Switch to ${distanceUnit === 'km' ? 'Miles' : 'Kilometers'}`}
+                        >
+                            <span
+                                className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${distanceUnit === 'mi' ? 'translate-x-6' : 'translate-x-1'}`}
+                            />
+                        </button>
+                        <span className={`font-semibold ${distanceUnit === 'mi' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`}>Miles</span>
+                    </div>
+                </div>
+            </div>
+
+            {profile?.role === 'admin' && (
+                <div className="border-t border-slate-300 dark:border-slate-700 pt-8 mt-8">
+                    <DataSeeder />
+                </div>
+            )}
         </div>
     );
 };

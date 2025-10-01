@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { GlobeIcon, DistanceIcon, ClockIcon, PlaneIcon } from './icons.jsx';
+import { useSettings } from '../contexts/SettingsContext.jsx';
+import { KM_TO_MILES } from '../services/geoUtils.js';
 
 const StatCard = ({ icon, label, value }) => (
   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md flex items-center space-x-4 transition-transform transform hover:scale-105">
@@ -22,11 +24,15 @@ const MobileStatItem = ({ icon, label, value }) => (
 );
 
 const StatsDashboard = ({ flights }) => {
+  const { distanceUnit } = useSettings();
+
   const stats = useMemo(() => {
     const totalFlights = flights.length;
-    const totalDistance = flights.reduce((sum, flight) => sum + flight.distance, 0);
+    const totalDistanceKm = flights.reduce((sum, flight) => sum + flight.distance, 0);
     const totalDuration = flights.reduce((sum, flight) => sum + flight.duration, 0);
     const uniqueAirports = new Set(flights.flatMap(f => [f.from, f.to])).size;
+
+    const displayDistance = distanceUnit === 'mi' ? totalDistanceKm * KM_TO_MILES : totalDistanceKm;
 
     const formatDuration = (minutes) => {
       const d = Math.floor(minutes / (24 * 60));
@@ -52,18 +58,19 @@ const StatsDashboard = ({ flights }) => {
         if (distance >= 1000) {
             return `${Math.round(distance / 1000)}k`;
         }
-        return distance.toString();
+        return Math.round(distance).toString();
     };
 
     return {
       totalFlights,
-      totalDistance: totalDistance.toLocaleString(),
-      totalDistanceCompact: formatDistanceCompact(totalDistance),
+      totalDistance: Math.round(displayDistance).toLocaleString(),
+      totalDistanceCompact: formatDistanceCompact(displayDistance),
       totalDuration: formatDuration(totalDuration),
       totalDurationCompact: formatDurationCompact(totalDuration),
       uniqueAirports,
+      distanceUnitLabel: distanceUnit === 'mi' ? 'mi' : 'km',
     };
-  }, [flights]);
+  }, [flights, distanceUnit]);
 
   return (
     <>
@@ -77,7 +84,7 @@ const StatsDashboard = ({ flights }) => {
            />
            <MobileStatItem 
              icon={<DistanceIcon className="w-7 h-7 text-green-500" />} 
-             label="Distance (km)" 
+             label={`Distance (${stats.distanceUnitLabel})`} 
              value={stats.totalDistanceCompact} 
            />
            <MobileStatItem 
@@ -96,7 +103,7 @@ const StatsDashboard = ({ flights }) => {
       {/* Desktop View: Full stat cards */}
       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
         <StatCard icon={<PlaneIcon className="w-6 h-6 text-blue-600 dark:text-blue-300" />} label="Total Flights" value={stats.totalFlights} />
-        <StatCard icon={<DistanceIcon className="w-6 h-6 text-green-600 dark:text-green-300" />} label="Total Distance (km)" value={stats.totalDistance} />
+        <StatCard icon={<DistanceIcon className="w-6 h-6 text-green-600 dark:text-green-300" />} label={`Total Distance (${stats.distanceUnitLabel})`} value={stats.totalDistance} />
         <StatCard icon={<ClockIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-300" />} label="Total Time in Air" value={stats.totalDuration} />
         <StatCard icon={<GlobeIcon className="w-6 h-6 text-purple-600 dark:text-purple-300" />} label="Airports Visited" value={stats.uniqueAirports} />
       </div>

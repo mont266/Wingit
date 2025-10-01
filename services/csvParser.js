@@ -89,6 +89,7 @@ export const parseMyFlightRadarCsv = (csvText) => {
     distance: findIndex('Distance'), // This column may not exist
     duration: findIndex('Duration'),
     aircraft: findIndex('Aircraft type', 'Aircraft'), // Handle both possible names
+    seatNumber: findIndex('Seat', 'Seat number'),
   };
   
   const requiredColumns = [
@@ -131,6 +132,7 @@ export const parseMyFlightRadarCsv = (csvText) => {
       distance: distance,
       duration: parseDuration(values[columnIndices.duration]),
       aircraft: values[columnIndices.aircraft] || 'N/A',
+      seat_number: values[columnIndices.seatNumber] || null,
     };
   }).filter(f => f.date && f.from && f.to); // Filter out potentially empty/invalid rows
 };

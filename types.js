@@ -13,6 +13,7 @@
  * @property {string} aircraft
  * @property {number} distance - in kilometers
  * @property {number} duration - in minutes
+ * @property {string} [seat_number] - The passenger's seat number
  */
 
 /**
